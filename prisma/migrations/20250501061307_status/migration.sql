@@ -4,6 +4,9 @@ CREATE TYPE "Status" AS ENUM ('NEW', 'OLD');
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'SUPER_ADMIN', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'PANDING');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -14,9 +17,10 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "phot" TEXT NOT NULL,
+    "status" "UserStatus" NOT NULL,
     "role" "Role" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "regionId" TEXT NOT NULL,
+    "regionId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -141,8 +145,14 @@ CREATE TABLE "Region" (
     CONSTRAINT "Region_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
+
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

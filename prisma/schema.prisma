@@ -22,6 +22,7 @@ model User {
   password        String
   phone           String        @unique
   phot            String
+  status          UserStatus
   role            Role
   Product         Product[]
   Like            Like[]
@@ -157,6 +158,11 @@ enum Role {
   USER
   SUPER_ADMIN
   ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  PANDING
 }
 
 model Region {

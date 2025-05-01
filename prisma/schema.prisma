@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String        @id @default(uuid())
+  firstName       String
+  lastName        String
+  year            Int
+  email           String        @unique
+  password        String
+  phone           String        @unique
+  phot            String
+  role            Role
+  Product         Product[]
+  Like            Like[]
+  Order           Order[]
+  Comment         Comment[]
+  Vievs           Vievs[]
+  FromChat        Chat[]        @relation("from")
+  ToChat          Chat[]        @relation("to")
+  FromChatMessage ChatMessage[] @relation("from")
+  ToChatMessage   ChatMessage[] @relation("to")
+  Session         Session[]
+  createdAt       DateTime      @default(now())
+  Region          Region?       @relation(fields: [regionId], references: [id])
+  regionId        String?
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  Product   Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Type {
+  id        String    @id @default(uuid())
+  name      String
+  Product   Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id    String @id @default(uuid())
+  name  String
+  price Int
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  type   Type   @relation(fields: [typeId], references: [id])
+  typeId String
+
+  status      Status
+  colors      String
+  count       Int
+  discount    Int
+  description String
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  photo     String
+  Like      Like[]
+  Order     Order[]
+  Comment   Comment[]
+  Vievs     Vievs[]
+  createdAt DateTime  @default(now())
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  text      String
+  createdAt DateTime @default(now())
+}
+
+model Vievs {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id          String        @id @default(uuid())
+  from        User          @relation("from", fields: [fromId], references: [id])
+  fromId      String
+  to          User          @relation("to", fields: [toId], references: [id])
+  toId        String
+  ChatMessage ChatMessage[]
+  createdAt   DateTime      @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  from      User     @relation("from", fields: [fromId], references: [id])
+  fromId    String
+  to        User     @relation("to", fields: [toId], references: [id])
+  toId      String
+  message   String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  ip        String
+  data      Json
+  createdAt DateTime @default(now())
+}
+
+enum Status {
+  NEW
+  OLD
+}
+
+enum Role {
+  USER
+  SUPER_ADMIN
+  ADMIN
+}
+
+model Region {
+  id        String   @id @default(uuid())
+  name      String
+  User      User[]
+  createdAt DateTime @default(now())
+}

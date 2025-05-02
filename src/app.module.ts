@@ -11,10 +11,27 @@ import { ProductModule } from './product/product.module';
 import { CommentModule } from './comment/comment.module';
 import { OrderModule } from './order/order.module';
 import { LikeModule } from './like/like.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { MulterController } from './multer/multer.controller';
 @Module({
-  imports: [RegionModule, PrismaModule, UserModule, MailerModule, CategoryModule, ColorModule, ProductModule, CommentModule, OrderModule, LikeModule],
-  controllers: [AppController],
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/file',
+    }),
+    RegionModule,
+    PrismaModule,
+    UserModule,
+    MailerModule,
+    CategoryModule,
+    ColorModule,
+    ProductModule,
+    CommentModule,
+    OrderModule,
+    LikeModule,
+  ],
+  controllers: [AppController, MulterController],
   providers: [AppService],
 })
 export class AppModule {}

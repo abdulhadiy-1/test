@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "Tipe" AS ENUM ('PHONE', 'ELECTRONICS', 'LAPTOPS', 'ACCESSORIES');
+
+-- DropEnum
+DROP TYPE "Types";

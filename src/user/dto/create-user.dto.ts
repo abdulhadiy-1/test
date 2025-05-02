@@ -13,6 +13,7 @@ import {
   IsStrongPassword,
   IsUUID,
   IsOptional,
+  IsUrl,
 } from 'class-validator';
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -72,8 +73,7 @@ export class CreateUserDto {
   @ApiProperty({
     example: 'example.url'
   })
-  @IsString()
-  @MaxLength(255)
+  @IsUrl()
   phot: string;
 
   @ApiProperty({ enum: Role })

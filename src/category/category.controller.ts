@@ -1,40 +1,40 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { RegionService } from './region.service';
-import { CreateRegionDto } from './dto/create-region.dto';
-import { UpdateRegionDto } from './dto/update-region.dto';
+import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import { RoleD } from 'src/user/decorators/roles.decorstor';
 import { Role } from '@prisma/client';
 import { RoleGuard } from 'src/role/role.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 
-@Controller('region')
-export class RegionController {
-  constructor(private readonly regionService: RegionService) {}
+@Controller('category')
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
 
   @RoleD(Role.ADMIN)
   @UseGuards(RoleGuard)
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createRegionDto: CreateRegionDto) {
-    return this.regionService.create(createRegionDto);
+  create(@Body() createCategoryDto: CreateCategoryDto) {
+    return this.categoryService.create(createCategoryDto);
   }
 
   @Get()
   findAll() {
-    return this.regionService.findAll();
+    return this.categoryService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.regionService.findOne(id);
+    return this.categoryService.findOne(id);
   }
 
   @RoleD(Role.ADMIN, Role.SUPER_ADMIN)
   @UseGuards(RoleGuard)
   @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRegionDto: UpdateRegionDto) {
-    return this.regionService.update(id, updateRegionDto);
+  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+    return this.categoryService.update(id, updateCategoryDto);
   }
 
   @RoleD(Role.ADMIN)
@@ -42,6 +42,6 @@ export class RegionController {
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.regionService.remove(id);
+    return this.categoryService.remove(id);
   }
 }

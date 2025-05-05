@@ -17,7 +17,7 @@ import { Request } from 'express';
 import { RoleD } from 'src/user/decorators/roles.decorstor';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Status, Types } from '@prisma/client';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
 
 @Controller('product')
 export class ProductController {
@@ -46,7 +46,7 @@ export class ProductController {
   ) {
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 10;
-  
+
     return this.productService.findAll(
       pageNum,
       limitNum,
@@ -56,7 +56,6 @@ export class ProductController {
       type,
     );
   }
-  
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -75,5 +74,19 @@ export class ProductController {
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: Request) {
     return this.productService.remove(id, req);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('addViev')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        productId: { type: 'string' },
+      },
+    },
+  })
+  addViev(@Body() id: string, @Req() req: Request) {
+    return this.productService.viev(id, req);
   }
 }

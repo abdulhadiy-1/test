@@ -6,20 +6,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class RegionService {
   constructor(private client: PrismaService) {}
-  create(createRegionDto: CreateRegionDto) {
-    let region = this.client.region.create({
+  async create(createRegionDto: CreateRegionDto) {
+    let region = await this.client.region.create({
       data: createRegionDto,
     });
     return region;
   }
 
-  findAll() {
-    let regions = this.client.region.findMany();
+  async findAll() {
+    let regions = await this.client.region.findMany();
     return regions;
   }
 
-  findOne(id: string) {
-    let region = this.client.region.findUnique({
+  async findOne(id: string) {
+    let region = await this.client.region.findUnique({
       where: {
         id,
       },
@@ -31,8 +31,8 @@ export class RegionService {
     return region;
   }
 
-  update(id: string, updateRegionDto: UpdateRegionDto) {
-    let region = this.client.region.findUnique({
+  async update(id: string, updateRegionDto: UpdateRegionDto) {
+    let region = await this.client.region.findUnique({
       where: {
         id,
       },
@@ -40,7 +40,7 @@ export class RegionService {
     if (!region) {
       throw new NotFoundException('Region not found');
     }
-    let updated = this.client.region.update({
+    let updated = await this.client.region.update({
       where: {
         id,
       },
@@ -49,8 +49,8 @@ export class RegionService {
     return updated;
   }
 
-  remove(id: string) {
-    let region = this.client.region.findUnique({
+  async remove(id: string) {
+    let region = await this.client.region.findUnique({
       where: {
         id,
       },
@@ -58,7 +58,7 @@ export class RegionService {
     if (!region) {
       throw new NotFoundException('Region not found');
     }
-    let deleted = this.client.region.delete({
+    let deleted = await this.client.region.delete({
       where: {
         id,
       },

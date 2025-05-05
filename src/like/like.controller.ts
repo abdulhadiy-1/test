@@ -24,15 +24,17 @@ export class LikeController {
   create(@Body() createLikeDto: CreateLikeDto, @Req() req: Request) {
     return this.likeService.create(createLikeDto, req);
   }
+
   @UseGuards(AuthGuard)
   @Get()
   findAll(@Req() req: Request) {
     return this.likeService.findAll(req);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.likeService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    return this.likeService.findOne(id, req);
   }
   @UseGuards(AuthGuard)
   @Delete(':id')

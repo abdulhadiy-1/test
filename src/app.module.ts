@@ -14,6 +14,7 @@ import { LikeModule } from './like/like.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MulterController } from './multer/multer.controller';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -30,6 +31,7 @@ import { MulterController } from './multer/multer.controller';
     CommentModule,
     OrderModule,
     LikeModule,
+    ChatModule,
   ],
   controllers: [AppController, MulterController],
   providers: [AppService],

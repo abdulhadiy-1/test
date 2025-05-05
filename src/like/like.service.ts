@@ -15,31 +15,34 @@ export class LikeService {
       where: { id: createLikeDto.productId },
     });
     if (!prd) throw new NotFoundException('product not found');
+  
     let like = await this.client.like.findFirst({
       where: { productId: prd.id, userId: req['user'] },
-      include: { product: true, user: true },
     });
+  
     if (!like) {
-      let a = await this.client.like.create({
+      return await this.client.like.create({
         data: { productId: prd.id, userId: req['user'] },
         include: { product: true, user: true },
       });
-      return a;
     }
-    return like;
+  
+    await this.client.like.delete({ where: { id: like.id } });
+    return { message: 'Like removed', id: like.id };
   }
+  
 
   async findAll(req: Request) {
-    let likes = await this.client.order.findMany({
+    let likes = await this.client.like.findMany({
       where: { userId: req['user'] },
       include: { product: true, user: true },
     });
     return likes;
   }
 
-  async findOne(id: string) {
-    let like = await this.client.like.findUnique({
-      where: { id },
+  async findOne(id: string, req: Request) {
+    let like = await this.client.like.findFirst({
+      where: { id, userId: req['user']},
       include: { product: true, user: true },
     });
     if (!like) throw new NotFoundException('like not found');

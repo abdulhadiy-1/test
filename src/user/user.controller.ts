@@ -16,6 +16,9 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { RoleD } from './decorators/roles.decorstor';
 import { Role } from '@prisma/client';
 import { RoleGuard } from 'src/role/role.guard';
+import { ApiBody } from '@nestjs/swagger';
+import { VerifyUserDto } from './dto/verify-user.dto';
+import { RefreshGuard } from 'src/auth/refresh.auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +28,7 @@ export class UserController {
     return this.userService.register(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(RefreshGuard)
   @Get('refreshToken')
   refresh(@Req() req: Request){
     return this.userService.refreshToken(req)
@@ -35,10 +38,37 @@ export class UserController {
   login(@Body() data: LoginUserDto, @Req() req: Request) {
     return this.userService.login(data, req);
   }
+
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email' },
+      },
+      required: ['email'],
+    },
+  })
   @Post('send-otp')
-  sendOtp(@Body() data: string) {
+  sendOtp(@Body() data: { email: string }) {
     return this.userService.sendOtp(data);
   }
+
+  @RoleD(Role.ADMIN)
+  @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard)
+  @Get()
+  findAll(){
+    return this.userService.findAll()
+  }
+
+  @RoleD(Role.ADMIN)
+  @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard)
+  @Get(":id")
+  findById(@Param("id") id: string){
+    return this.userService.findById(id)
+  }
+  
 
   @RoleD(Role.ADMIN)
   @UseGuards(RoleGuard)
@@ -67,7 +97,7 @@ export class UserController {
   }
 
   @Post('verify')
-  verify(@Body() data: { email: string; otp: number }) {
+  verify(@Body() data: VerifyUserDto) {
     return this.userService.verifyOtp(data);
   }
 }

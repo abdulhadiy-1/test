@@ -14,18 +14,18 @@ datasource db {
 }
 
 model User {
-  id              String        @id @default(uuid())
-  firstName       String
-  lastName        String
-  year            Int
-  email           String        @unique
-  password        String
-  phone           String        @unique
-  phot            String
-  status          UserStatus
-  role            Role
-  regionId        String?
-  
+  id        String     @id @default(uuid())
+  firstName String
+  lastName  String
+  year      Int
+  email     String     @unique
+  password  String
+  phone     String     @unique
+  phot      String
+  status    UserStatus
+  role      Role
+  regionId  String?
+
   Region          Region?       @relation(fields: [regionId], references: [id])
   Product         Product[]
   Like            Like[]
@@ -49,17 +49,19 @@ model Category {
 }
 
 model Product {
-  id          String @id @default(uuid())
-  name        String
-  price       Int
-  categoryId  String
-  photo       String
-  type        Types
-  status      Status
-  count       Int
-  discount    Int
-  description String
-  ownerId     String
+  id            String @id @default(uuid())
+  name          String
+  price         Int
+  discountPrice Int?
+  categoryId    String
+  photo         String
+  type          Types
+  status        Status
+  count         Int
+  discount      Int
+  description   String
+  ownerId       String
+  star          Int?
 
   Like      Like[]
   Order     Order[]
@@ -97,6 +99,7 @@ model Comment {
   product   Product  @relation(fields: [productId], references: [id])
   productId String
   text      String
+  star      Int?
   createdAt DateTime @default(now())
 }
 
@@ -121,13 +124,14 @@ model Chat {
 
 model ChatMessage {
   id        String   @id @default(uuid())
-  from      User     @relation("from", fields: [fromId], references: [id])
   fromId    String
-  to        User     @relation("to", fields: [toId], references: [id])
   toId      String
   message   String
-  chat      Chat     @relation(fields: [chatId], references: [id])
   chatId    String
+  
+  to        User     @relation("to", fields: [toId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  from      User     @relation("from", fields: [fromId], references: [id])
   createdAt DateTime @default(now())
 }
 

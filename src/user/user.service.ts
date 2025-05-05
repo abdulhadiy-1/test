@@ -12,6 +12,7 @@ import { MailService } from 'src/mailer/mailer.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { VerifyUserDto } from './dto/verify-user.dto';
 
 totp.options = { digits: 5, step: 300 };
 
@@ -52,15 +53,16 @@ export class UserService {
       data: {
         ...createUserDto,
         password: hash,
+        regionId: null,
         status: 'PANDING',
         role: 'USER',
       },
     });
 
-    return { message: 'User created successfully, otp sent to email', user };
+    return { message: 'User created successfully, otp sent to email', user, otp };
   }
 
-  async verifyOtp(data: any) {
+  async verifyOtp(data: VerifyUserDto) {
     try {
       let email = data.email;
       let otp = data.otp;
@@ -82,15 +84,15 @@ export class UserService {
       return { message: 'otp verified' };
     } catch (error) {
       console.log(error);
-      throw new BadRequestException('Something went wrong with OTP');
+      throw new BadRequestException('wrong OTP');
     }
   }
 
-  async sendOtp(email: string) {
-    let otp = totp.generate(email);
+  async sendOtp(data: {email: string}) {
+    let otp = totp.generate(data.email);
     try {
       await this.emailService.sendMail(
-        email,
+        data.email,
         'one time password',
         `your otp is ${otp}`,
       );
@@ -98,7 +100,17 @@ export class UserService {
       console.log('Error sending email:', error);
       throw new BadRequestException('Failed to send OTP email');
     }
-    return { message: 'OTP sent successfully' };
+    return { message: 'OTP sent successfully', otp};
+  }
+
+  async findAll(){
+    return await this.client.user.findMany()
+  }
+
+  async findById(id: string){
+    let user = await this.client.user.findUnique({where: {id}})
+    if(!user) throw new NotFoundException("user not found")
+    return 
   }
 
   async me(req: Request) {
@@ -136,22 +148,13 @@ export class UserService {
   }
 
   async refreshToken(req: Request) {
-    let token = req['user'];
-    let payload: any;
-    try {
-      payload = this.jwt.verify(token, {
-        secret: 'REFRESH_TOKEN_SECRET',
-      });
-    } catch (err) {
-      throw new BadRequestException('Invalid refresh token');
-    }
     let user = await this.client.user.findUnique({
       where: { id: req['user'] },
     });
 
     if(!user) throw new NotFoundException("user not found")
 
-    const accessToken = this.jwt.sign({ id: payload.id, role: user.role });
+    const accessToken = this.jwt.sign({ id: user.id, role: user.role });
 
     return { accessToken };
   }

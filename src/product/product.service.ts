@@ -13,11 +13,20 @@ import { Status, Types } from '@prisma/client';
 export class ProductService {
   constructor(private client: PrismaService) {}
   async create(createProductDto: CreateProductDto, req: Request) {
+    let {colors, ...rest} = createProductDto
+    let d = rest.price
+    if (rest.discount && rest.discount > 0) {
+      d = Math.round(rest.price - (rest.price * rest.discount / 100));
+    }   
     let userId = req['user'];
     let prd = await this.client.product.create({
       data: {
-        ...createProductDto,
+        ...rest,
+        color: {
+          connect: colors.map(id => ({ id })),
+        },
         ownerId: userId,
+        discountPrice: d
       },
     });
     return prd;
@@ -89,6 +98,11 @@ export class ProductService {
       where: { id },
       data: {
         ...updateProductDto,
+        color: updateProductDto.colors
+        ? {
+            set: updateProductDto.colors.map((id) => ({ id })),
+          }
+        : undefined,
       },
     });
     return newprd;

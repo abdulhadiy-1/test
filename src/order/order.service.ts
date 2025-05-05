@@ -35,12 +35,12 @@ export class OrderService {
 
   async findAll(req: Request) {
     let myId = req['user'];
-    let orders = await this.client.order.findMany({ where: { userId: myId } });
+    let orders = await this.client.order.findMany({ where: { userId: myId }, include:{ product: true}});
     return orders;
   }
 
-  async findOne(id: string) {
-    let order = await this.client.order.findUnique({ where: { id } });
+  async findOne(id: string, req: Request) {
+    let order = await this.client.order.findFirst({ where: { id, userId: req['user'] }, include: {product: true}});
     if (!order) throw new NotFoundException('order not found');
     return order;
   }

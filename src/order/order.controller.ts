@@ -29,10 +29,11 @@ export class OrderController {
   findAll(@Req() req: Request) {
     return this.orderService.findAll(req);
   }
+  @UseGuards(AuthGuard)
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+  findOne(@Param('id') id: string,@Req() req: Request) {
+    return this.orderService.findOne(id, req);
   }
   @UseGuards(AuthGuard)
   @Delete(':id')

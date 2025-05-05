@@ -23,7 +23,8 @@ export class CreateProductDto {
     status: Status
     @ApiProperty()
     @IsArray()
-    colors: string[]
+    @IsUUID(undefined, { each: true }) 
+    colors: string[];
     @ApiProperty()
     @IsNumber()
     @Min(1)
